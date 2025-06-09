@@ -5,7 +5,7 @@
 # Creado el: 24/02/2025 03:32 pm
 ###################################################################
 
-from config import *
+#from config import *
 
 import telebot
 import threading
@@ -24,8 +24,17 @@ from telebot.types import ReplyKeyboardMarkup   #botones replicar
 from telebot.types import InlineKeyboardButton   #botones en linea, debajo
 
 
+urlBCV = 'https://www.bcv.org.ve/'
+idDolar = "dolar"
+idEuro = "euro"
 
-bot = telebot.TeleBot(TELEGRAM_TOKEN)
+urlApiSAP = "https://enlaces.fortiddns.com:44301/sap/bc/zapi_regrate?sap-client=400"
+SAPUser = "WSAPIREST"
+SAPPassword = "APIR3st@123"
+
+
+#bot = telebot.TeleBot(TELEGRAM_TOKEN)
+bot = telebot.TeleBot("6313252063:AAHJblx8ncxWqJKoQmaTzPRcqIvaYy6ph3U")
 scheduleTaks = False
 
 ###################################################
