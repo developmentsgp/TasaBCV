@@ -6,9 +6,6 @@
 # Creado el: 24/02/2025 03:32 pm
 ###################################################################
 
-
-### algun comentario
-
 import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
@@ -122,22 +119,41 @@ def Update_Tasa(call=None):
         date_str = dateSoup.span.get_text()
 
         #-- Establecer locale según el entorno
-        try:
-            if os.environ.get("RENDER"):
-                locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
-            elif platform.system() == "Windows":
-                locale.setlocale(locale.LC_TIME, "Spanish_Spain.1252")
-            else:
-                locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
-        except locale.Error:
-            locale.setlocale(locale.LC_TIME, "")  # Usa el locale por defecto del sistema
+#        try:
+#            if os.environ.get("RENDER"):
+#                locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
+#            elif platform.system() == "Windows":
+#                locale.setlocale(locale.LC_TIME, "Spanish_Spain.1252")
+#            else:
+#                locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
+#        except locale.Error:
+#            locale.setlocale(locale.LC_TIME, "")  # Usa el locale por defecto del sistema
 
 #        if os.environ.get("RENDER"):
 #            locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
 #        else:
 #            locale.setlocale(locale.LC_TIME, "Spanish_Spain.1252")
 
-        date = datetime.strptime(date_str, "%A, %d %B %Y").strftime("%d/%m/%Y")
+#        date = datetime.strptime(date_str, "%A, %d %B %Y").strftime("%d/%m/%Y")
+
+
+        #locale.setlocale(locale.LC_TIME, "Spanish_Spain.1252")
+        #date = datetime.strptime(date_str, "%A, %d %B %Y").strftime("%d/%m/%Y")
+
+        meses = {'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04','mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08','septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'}
+    
+        #-- Quitar el día de la semana y separar
+        partes = date_str.strip().split(',')
+        if len(partes) != 2:
+            date = None
+
+        _, resto = partes
+        resto = resto.strip()
+        dia, mes, anio = resto.split()
+        mes_num = meses[mes.lower()]
+        date = f"{dia.zfill(2)}/{mes_num}/{anio}"
+
+        #print(f'Fecha: {date}')
     except Exception as e:
         error_msg = f'🛑 Error procesando datos BCV: {str(e)}'
         if call:
@@ -222,4 +238,3 @@ if __name__ == '__main__':
     
     # Iniciar servidor web principal
     run_web_server()
-    
