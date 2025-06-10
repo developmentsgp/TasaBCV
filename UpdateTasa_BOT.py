@@ -5,7 +5,8 @@
 # Creado el: 24/02/2025 03:32 pm
 ###################################################################
 
-import os
+#from config import *
+
 import telebot
 import threading
 import schedule
@@ -17,8 +18,6 @@ from bs4 import BeautifulSoup
 import locale
 from datetime import datetime
 import urllib3
-import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
 
 from telebot.types import InlineKeyboardMarkup   # botones
 from telebot.types import ReplyKeyboardMarkup   #botones replicar
@@ -91,21 +90,15 @@ def loop_schedule():
         time.sleep(1)
 
 #-- Actualizar tasa
-def Update_Tasa(call=None):
+def Update_Tasa(call):
     ssl._create_default_https_context = ssl._create_unverified_context
 
     try:
         page = urllib.request.urlopen(urlBCV)
     except requests.exceptions.HTTPError as errH: 
-        error_msg = f'Error de HTTP: {errH}'
-        print(error_msg)
-        if call:
-            bot.send_message(call.message.chat.id, f'🛑 {error_msg}')
+        print(f'Error de HTTP: {page.status_code} | {errH}'.json())
     except requests.exceptions.RequestException as errX:
-        error_msg = f'Error: {errX}'
-        print(error_msg)
-        if call:
-            bot.send_message(call.message.chat.id, f'🛑 {error_msg}')
+        print(f'Error: {page.status_code} | {errX}'.json())
 
     soup = BeautifulSoup(page, 'html.parser')
 
@@ -140,35 +133,17 @@ def Update_Tasa(call=None):
             f'{result["MESSAGE_V2"]}' + '\n' +
             f'{result["MESSAGE_V4"]}')
 
-            if call:
-                bot.send_message(call.message.chat.id, message, parse_mode="HTML")
-            else:
-                print(f"Actualización automática exitosa: {message}")
+            bot.send_message(call.message.chat.id, message, parse_mode="HTML")
         else:
-            error_msg = f'🛑 Error: {petition.text}'
-            if call:
-                bot.send_message(call.message.chat.id, error_msg) 
-            else:
-                print(error_msg)
+            bot.send_message(call.message.chat.id, f'🛑 Error: {petition.text}') 
         
     except requests.exceptions.Timeout as errT:
-        error_msg = f'🛑 Error de tiempo: {errT}'
-        if call:
-            bot.send_message(call.message.chat.id, error_msg)
-        else:
-            print(error_msg)
+        bot.send_message(call.message.chat.id, f'🛑 Error de tiempo: {petition.status_code} | {errT}'.json())
     except requests.exceptions.HTTPError as errH: 
-        error_msg = f'🛑 Error de HTTP: {errH}'
-        if call:
-            bot.send_message(call.message.chat.id, error_msg)
-        else:
-            print(error_msg)
+        bot.send_message(call.message.chat.id, f'🛑 Error de HTTP: {petition.status_code} | {errH}'.json())
     except requests.exceptions.RequestException as errX:
-        error_msg = f'🛑 Error: {errX}'
-        if call:
-            bot.send_message(call.message.chat.id, error_msg)
-        else:
-            print(error_msg)
+        bot.send_message(call.message.chat.id, f'🛑 Error: {petition.status_code} | {errX}'.json())
+
 
 
 #--------------------------------
@@ -203,13 +178,6 @@ def InitBot():
 
 
 if __name__ == '__main__':
-    # Iniciar el servidor Flask si existe la variable PORT
-    if os.environ.get('PORT') is not None:
-        flask_thread = threading.Thread(target=run_flask_app, daemon=True)
-
-    flask_thread.start()
-
-    # Iniciar el bot en el hilo principal
     print('Iniciando bot')
 
     # Creación del booleano que indica si el hilo secundario debe correr o no
@@ -221,3 +189,4 @@ if __name__ == '__main__':
 
     hilo_inicio = threading.Thread(name='bot', target=InitBot)
     hilo_inicio.start()
+
