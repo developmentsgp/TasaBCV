@@ -119,10 +119,20 @@ def Update_Tasa(call=None):
         date_str = dateSoup.span.get_text()
 
         #-- Establecer locale según el entorno
-        if os.environ.get("RENDER"):
-            locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
-        else:
-            locale.setlocale(locale.LC_TIME, "Spanish_Spain.1252")
+        try:
+            if os.environ.get("RENDER"):
+                locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
+            elif platform.system() == "Windows":
+                locale.setlocale(locale.LC_TIME, "Spanish_Spain.1252")
+            else:
+                locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
+        except locale.Error:
+            locale.setlocale(locale.LC_TIME, "")  # Usa el locale por defecto del sistema
+
+#        if os.environ.get("RENDER"):
+#            locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
+#        else:
+#            locale.setlocale(locale.LC_TIME, "Spanish_Spain.1252")
 
         date = datetime.strptime(date_str, "%A, %d %B %Y").strftime("%d/%m/%Y")
     except Exception as e:
@@ -157,9 +167,6 @@ def Update_Tasa(call=None):
                     f'{result["MESSAGE_V2"]}\n'
                     f'{result["MESSAGE_V4"]}\n'
                     f'{environ}')
-
-
-                    #f'Render ({os.environ.get('RENDER_SERVICE_ID', 'ID desconocido')})" if os.environ.get("RENDER") else f"Local ({os.uname().nodename if hasattr(os, 'uname') else os.getenv('COMPUTERNAME', 'Desconocido')})')
         else:
             message = f'🛑 Error en SAP: Código {petition.status_code}\n{petition.text}'
         
@@ -212,3 +219,4 @@ if __name__ == '__main__':
     
     # Iniciar servidor web principal
     run_web_server()
+    
