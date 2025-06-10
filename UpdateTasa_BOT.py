@@ -136,14 +136,25 @@ def Update_Tasa(call=None):
         
         if petition.status_code == 200:
             result = petition.json()[16]
+
+            if os.environ.get("RENDER"):
+                environ = f"Render: {os.environ.get('RENDER_SERVICE_ID', 'ID desconocido')}"
+            else:
+                environ = f"Local: {os.uname().nodename if hasattr(os, 'uname') else os.getenv('COMPUTERNAME', 'Desconocido')}"
+
             message = (f'<b>Resultados de Consulta al BCV</b>\n\n'
-                       f'📆 Fecha valor: {date}\n\n'
-                       f'Tipos de cambio:\nDólar = {dolar}\nEuro = {euro}\n\n'
-                       f'Resultados actualización en SAP:\n'
-                       f'{result["MESSAGE"]}\n'
-                       f'{result["MESSAGE_V2"]}\n'
-                       f'{result["MESSAGE_V4"]}\n'
-                       'Render')
+                    f'📆 Fecha valor: {date}\n\n'
+                    f'Tipos de cambio:\n'
+                    f'Dólar = {dolar}\n'
+                    f'Euro = {euro}\n\n'
+                    f'Resultados actualización en SAP:\n'
+                    f'{result["MESSAGE"]}\n'
+                    f'{result["MESSAGE_V2"]}\n'
+                    f'{result["MESSAGE_V4"]}\n'
+                    f'{environ}')
+
+
+                    #f'Render ({os.environ.get('RENDER_SERVICE_ID', 'ID desconocido')})" if os.environ.get("RENDER") else f"Local ({os.uname().nodename if hasattr(os, 'uname') else os.getenv('COMPUTERNAME', 'Desconocido')})')
         else:
             message = f'🛑 Error en SAP: Código {petition.status_code}\n{petition.text}'
         
