@@ -118,7 +118,12 @@ def Update_Tasa(call=None):
         dateSoup = soup.find('div', class_="dinpro")
         date_str = dateSoup.span.get_text()
 
-        locale.setlocale(locale.LC_TIME, "Spanish_Spain.1252")
+        #-- Establecer locale según el entorno
+        if os.environ.get("RENDER"):
+            locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
+        else:
+            locale.setlocale(locale.LC_TIME, "Spanish_Spain.1252")
+
         date = datetime.strptime(date_str, "%A, %d %B %Y").strftime("%d/%m/%Y")
     except Exception as e:
         error_msg = f'🛑 Error procesando datos BCV: {str(e)}'
